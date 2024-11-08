@@ -12,14 +12,14 @@ import Highlighter from 'react-highlight-words';
 
 const ManageUser = () => {
     const [page, setPage] = useState(0);
-    const [limit, setLimit] = useState(10);
+    const limit = 10
     const { data: users, error, reload, isLoading, refetch } = useGetAllUserQuery({ page, limit });
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const [filteredInfo, setFilteredInfo] = useState({});
     const [isVisible, setIsVisible] = useState(false);
     const [sortedInfo, setSortedInfo] = useState({});
-
+    console.log('users', users)
     let searchInput = null;
 
     const admin = useSelector(selectCurrentUser);
@@ -45,7 +45,7 @@ const ManageUser = () => {
         setSearchText('');
     };
 
-
+    console.log('users', users);
 
     const getColumnSearchProps = (dataIndex) => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
@@ -120,6 +120,7 @@ const ManageUser = () => {
         if (!searchText || !searchedColumn) return true;
         return user[searchedColumn].toString().toLowerCase().includes(searchText.toLowerCase());
     });
+    console.log(filteredUsers);
     const columns = [
         {
             title: 'Name',
@@ -171,14 +172,6 @@ const ManageUser = () => {
             ),
         },
         {
-            title: 'Khóa học đã mua',
-            dataIndex: 'course',
-            key: 'course',
-            align: "center",
-            ...getColumnSearchProps('course'),
-            sorter: (a, b) => a.course - b.course,
-        },
-        {
             title: 'Hành động',
             key: 'action',
             render: (_, record) => (
@@ -210,15 +203,6 @@ const ManageUser = () => {
         },
     ];
 
-    const transformedData = users?.users?.map((item, index) => ({
-        ...item,
-        key: index + 1,
-    }));
-
-    const handlePageChange = (newPage) => {
-        setPage(newPage - 1);
-    };
-
     return (
         <div className='flex flex-col justify-center items-center'>
             <p className="font-bold text-center w-fit text-4xl mb-9 mt-3 bg-custom-gradient bg-clip-text text-transparent"
@@ -228,7 +212,7 @@ const ManageUser = () => {
             >
                 Quản lý tài khoản
             </p>
-            {Object.keys(filteredInfo).length > 0 && (
+            {/* {Object.keys(filteredInfo).length > 0 && (
                 <Button
                     onClick={() => clearAll()}
                     type='primary'
@@ -237,7 +221,7 @@ const ManageUser = () => {
                     Bỏ lọc <Image preview={false} width={25} src={clearFilter} />
                 </Button>
 
-            )}
+            )} */}
 
             <Table
                 className='w-full'
@@ -249,13 +233,13 @@ const ManageUser = () => {
                 pagination={{
                     current: page + 1,
                     pageSize: limit,
-                    total: users?.total,
-                    onChange: (pageNumber, pageSize) => {
+                    total: users?.totalPages * limit,
+                    onChange: (pageNumber) => {
                         setPage(pageNumber - 1);
-                        setLimit(pageSize);
                     },
                 }}
             />
+
         </div>
     );
 };
